@@ -26,19 +26,19 @@ Before running the script, ensure you have the following installed:
    cd <repository-name>
 Install the required Python packages:
 
-bash
-Copy code
+ ```bash
 pip install pydub numpy librosa
 Usage
+```
 Place your input audio file in the input directory. (You can rename it as Voice02.m4a or change the script to reflect your filename.)
 
 Adjust the threshold_db variable in the script to set your desired dB threshold.
 
 Run the script:
 
-bash
-Copy code
+ ```bash
 python audio_loudness_filter.py
+```
 The output audio file with amplified segments will be saved in the output directory as loud_parts_amplified.wav.
 
 Configuration
