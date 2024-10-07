@@ -16,14 +16,6 @@ Before running the script, ensure you have the following installed:
 - Python 3.x
 - [ffmpeg](https://ffmpeg.org/download.html) (Ensure the `ffmpeg` folder is in the same directory as the script with the correct structure)
 
-### Folder Structure
-
-Your project directory should be structured as follows:
-
-your_project_directory/ │ ├── ffmpeg/ │ ├── bin/ │ │ ├── ffmpeg.exe │ │ └── ffprobe.exe │ └── ... (other ffmpeg files) │ ├── input/ │ └── Voice02.m4a (your input audio file) │ ├── output/ │ └── loud_parts_amplified.wav (output will be saved here) │ └── audio_loudness_filter.py (this script)
-
-bash
-Copy code
 
 ## Installation
 
