@@ -48,17 +48,11 @@ def choose_input_file():
 # Choose file from input directory
 input_filename = os.path.join(input_dir, choose_input_file())
 
-# Display progress bar while reading the file
-file_size = os.path.getsize(input_filename)
-read_progress_bar = tqdm(total=file_size, desc="Reading audio file", unit="B", unit_scale=True)
-
 # Load the audio file using pydub and manually update the progress bar
 audio = None
 with open(input_filename, "rb") as f:
     audio_bytes = f.read()
-    read_progress_bar.update(file_size)  # Update progress bar to 100%
-    read_progress_bar.close()
-
+    
 # Create audio segment from bytes after reading
 audio = AudioSegment.from_file(io.BytesIO(audio_bytes), format="m4a")
 
@@ -104,23 +98,6 @@ def contains_frequencies(segment, lowcut, highcut, threshold_db):
 # Loop through the audio in chunks to check the dB level and frequency content
 chunk_size = 1000  # Size of each chunk in milliseconds
 total_chunks = len(audio) // chunk_size
-
-# Use tqdm to display a progress bar for processing
-with tqdm(total=total_chunks, desc="Processing audio") as pbar:
-    for start in range(0, len(audio), chunk_size):
-        end = start + chunk_size
-        segment = audio[start:end]
-
-        # Check if the segment's average dB is above the threshold
-        if segment.dBFS > threshold_db:
-            # Check if the segment contains significant energy in the frequency range
-            if contains_frequencies(segment, lowcut, highcut, threshold_db):
-                # Amplify the segment by 10 dB
-                amplified_segment = segment + 10  # Increase volume by 10 dB
-                output_audio += amplified_segment
-
-        # Update the processing progress bar
-        pbar.update(1)
 
 # Check if any segments were added
 if len(output_audio) == 0:
