@@ -3,14 +3,34 @@ import sys
 import numpy as np
 from pydub import AudioSegment
 from scipy.fft import rfft, rfftfreq
-from tqdm import tqdm  # Progress bar
+from tqdm import tqdm
+import cv2
+import matplotlib.pyplot as plt
+import subprocess
 import io
-import warnings
 
 # Set the path to the local ffmpeg executable
 FFMPEG_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "ffmpeg", "bin"))
 FFMPEG_PATH = os.path.join(FFMPEG_DIR, "ffmpeg.exe")
 FFPROBE_PATH = os.path.join(FFMPEG_DIR, "ffprobe.exe")
+
+# def check_ffmpeg():
+#     return os.path.exists(FFMPEG_PATH) and os.path.exists(FFPROBE_PATH)
+
+# def install_ffmpeg():
+#     print("ffmpeg executables not found in the expected location.")
+#     print("Please ensure the ffmpeg folder is in the same directory as this script.")
+#     print("The folder structure should be:")
+#     print("- Your script directory")
+#     print("  - ffmpeg")
+#     print("    - bin")
+#     print("      - ffmpeg.exe")
+#     print("      - ffprobe.exe")
+#     sys.exit(1)
+
+# Check for ffmpeg
+# if not check_ffmpeg():
+#     install_ffmpeg()
 
 # Add ffmpeg to the system PATH
 os.environ["PATH"] += os.pathsep + FFMPEG_DIR
@@ -48,16 +68,22 @@ def choose_input_file():
 # Choose file from input directory
 input_filename = os.path.join(input_dir, choose_input_file())
 
+# Display progress bar while reading the file
+file_size = os.path.getsize(input_filename)
+read_progress_bar = tqdm(total=file_size, desc="Reading audio file", unit="B", unit_scale=True)
+
 # Load the audio file using pydub and manually update the progress bar
 audio = None
 with open(input_filename, "rb") as f:
     audio_bytes = f.read()
-    
+    read_progress_bar.update(file_size)  # Update progress bar to 100%
+    read_progress_bar.close()
+
 # Create audio segment from bytes after reading
 audio = AudioSegment.from_file(io.BytesIO(audio_bytes), format="m4a")
 
 # Define a decibel threshold for audio segments to keep
-threshold_db = -30  # Threshold in decibels (above this will be saved)
+threshold_db = -28  # Threshold in decibels (above this will be saved)
 
 # Frequency range to check for
 lowcut = 800.0  # Low cutoff frequency
@@ -99,6 +125,23 @@ def contains_frequencies(segment, lowcut, highcut, threshold_db):
 chunk_size = 1000  # Size of each chunk in milliseconds
 total_chunks = len(audio) // chunk_size
 
+# Use tqdm to display a progress bar for processing
+with tqdm(total=total_chunks, desc="Processing audio") as pbar:
+    for start in range(0, len(audio), chunk_size):
+        end = start + chunk_size
+        segment = audio[start:end]
+
+        # Check if the segment's average dB is above the threshold
+        if segment.dBFS > threshold_db:
+            # Check if the segment contains significant energy in the frequency range
+            if contains_frequencies(segment, lowcut, highcut, threshold_db):
+                # Amplify the segment by 10 dB
+                amplified_segment = segment + 10  # Increase volume by 10 dB
+                output_audio += amplified_segment
+
+        # Update the processing progress bar
+        pbar.update(1)
+
 # Check if any segments were added
 if len(output_audio) == 0:
     print("No audio above threshold detected; no audio was added.")
@@ -111,3 +154,4 @@ else:
     output_wav_filename = os.path.join(output_dir, f"amplified_{os.path.basename(input_filename)}.wav")
     output_audio.export(output_wav_filename, format="wav")
     print(f"WAV file saved to {output_wav_filename}")
+
