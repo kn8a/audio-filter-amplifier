@@ -65,9 +65,20 @@ python audioCleaner.py
 6. The output audio file with amplified segments will be saved in the output directory as loud_parts_amplified.wav.
 
 ## Configuration
-Threshold Level: You can adjust the loudness threshold by changing the threshold_db variable in the script. The default is set to -20 dB.
 
-Amplification Level: The segments are amplified by 10 dB. This value can be modified in the line amplified_segment = segment + 10.
+Decibel Threshold: The program keeps segments with an average decibel level greater than -28 dB. You can adjust this threshold by changing the threshold_db variable.
+
+Frequency Range: The default frequency range is 800 Hz to 6000 Hz. You can change the lowcut and highcut variables to modify this range.
+
+### Example
+Place an audio file example.m4a in the input folder.
+Run the program.
+Choose example.m4a from the list.
+The program processes the audio and saves the result in output/amplified_example.wav.
+
+### Notes
+Ensure that ffmpeg is correctly set up, as it is required for processing .m4a and .mp3 files.
+Only .m4a, .mp3, and .wav formats are supported. Any other file format will result in an error message.
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
