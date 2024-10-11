@@ -68,6 +68,9 @@ def choose_input_file():
 # Choose file from input directory
 input_filename = os.path.join(input_dir, choose_input_file())
 
+# Extract file extension
+file_extension = input_filename.split('.')[-1].lower()
+
 # Display progress bar while reading the file
 file_size = os.path.getsize(input_filename)
 read_progress_bar = tqdm(total=file_size, desc="Reading audio file", unit="B", unit_scale=True)
@@ -79,8 +82,12 @@ with open(input_filename, "rb") as f:
     read_progress_bar.update(file_size)  # Update progress bar to 100%
     read_progress_bar.close()
 
-# Create audio segment from bytes after reading
-audio = AudioSegment.from_file(io.BytesIO(audio_bytes), format="m4a")
+# Use the file extension to set the format for pydub
+if file_extension in ['m4a', 'mp3', 'wav']:
+    audio = AudioSegment.from_file(io.BytesIO(audio_bytes), format=file_extension)
+else:
+    print(f"Unsupported file format: {file_extension}")
+    sys.exit(1)
 
 # Define a decibel threshold for audio segments to keep
 threshold_db = -28  # Threshold in decibels (above this will be saved)
