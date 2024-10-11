@@ -39,6 +39,12 @@ Usage
  ```bash
 python audio_loudness_filter.py
 ```
+or if you need to also filter by range of audio frequency, run:
+
+ ```bash
+python audio_loudness_filter.py
+```
+
 6. The output audio file with amplified segments will be saved in the output directory as loud_parts_amplified.wav.
 
 ## Configuration
