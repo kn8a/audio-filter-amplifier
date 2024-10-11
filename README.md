@@ -1,20 +1,22 @@
 # Audio Loudness Filter and Amplifier
 
-This Python program processes audio files to extract and amplify segments that exceed a specified loudness threshold. It uses `pydub` for audio manipulation and requires `ffmpeg` for audio format handling.
+This Python program processes audio files by detecting segments with significant energy in a specific frequency range and decibel level, amplifies those segments, and exports them as a new .wav file. The program supports .m4a, .mp3, and .wav input files.
 
 ## Features
 
-- Extracts audio segments that exceed a defined dB threshold.
-- Amplifies the extracted segments by a specified dB level.
-- Supports multiple audio formats (via ffmpeg).
-- Simple and straightforward usage.
+- Detects audio segments based on a decibel threshold and specified frequency range.
+- Amplifies the detected segments by a user-defined decibel amount.
+- Exports the processed audio as a .wav file.
+- Displays progress bars for reading and processing files.
 
 ## Prerequisites
 
-Before running the script, ensure you have the following installed:
-
 - Python 3.x
-- [ffmpeg](https://ffmpeg.org/download.html) (Ensure the `ffmpeg` folder is in the same directory as the script with the correct structure)
+- pydub for handling audio files.
+- scipy for Fast Fourier Transform (FFT) calculations.
+- numpy for numerical operations.
+- tqdm for progress bars.
+- ffmpeg for handling .m4a and .mp3 files.
 
 
 ## Installation
@@ -24,12 +26,26 @@ Before running the script, ensure you have the following installed:
    ```bash
    git clone <repository-url>
    cd <repository-name>
-2. Install the required Python packages:
+2. Install the requirements:
 
  ```bash
 pip install pydub numpy librosa
-Usage
 ```
+
+2.1 Download and set up ffmpeg:
+Download ffmpeg from [here](https://ffmpeg.org/download.html).
+Place the ffmpeg folder in the same directory as this script.
+Ensure the folder structure is as follows:
+```markdown
+- Your script directory
+  - ffmpeg
+    - bin
+      - ffmpeg.exe
+      - ffprobe.exe
+```
+
+## Usage
+
 3. Place your input audio file in the input directory. (You can rename it as Voice02.m4a or change the script to reflect your filename.)
 
 4. Adjust the threshold_db variable in the script to set your desired dB threshold.
@@ -37,12 +53,13 @@ Usage
 5. Run the script:
 
  ```bash
-python audio_loudness_filter.py
+python audioCleaner_hz.py
 ```
-or if you need to also filter by range of audio frequency, run:
+
+or if you only need to filter by db, run:
 
  ```bash
-python audio_loudness_filter.py
+python audioCleaner.py
 ```
 
 6. The output audio file with amplified segments will be saved in the output directory as loud_parts_amplified.wav.
